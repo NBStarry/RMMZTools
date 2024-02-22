@@ -1,7 +1,4 @@
 # For Windows Now
-# TODO:
-# 1. 分离转化像素和拼图功能
-# 2. 每个子目录搞一个小拼图
 
 import os
 from tkinter import Tk, Label, Entry, Button, filedialog, messagebox
