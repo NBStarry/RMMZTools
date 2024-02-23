@@ -1,5 +1,5 @@
 # For Windows Now
-# TODO: 做一个下拉菜单选择拼图大小
+# TODO: 为每种素材增加高亮动画
 import os
 from tkinter import Tk, Label, Entry, Button, filedialog, messagebox, OptionMenu, StringVar
 
@@ -25,18 +25,18 @@ class TilePackApp:
         output_entry.grid(row=2, column=1)
 
         # 图片尺寸下拉菜单
-        Label(root, text='图片尺寸：').grid(row=3, column=0)
-        self.size_var = StringVar(root)
-        self.size_var.set('768x768')  # 设置默认值
-        size_options = ['768x768', '576x384']  # 可选尺寸列表
-        self.size_menu = OptionMenu(root, self.size_var, *size_options)
-        self.size_menu.grid(row=3, column=1)
+        # Label(root, text='图片尺寸：').grid(row=3, column=0)
+        # self.size_var = StringVar(root)
+        # self.size_var.set('768x768')  # 设置默认值
+        # size_options = ['768x768', '576x384']  # 可选尺寸列表
+        # self.size_menu = OptionMenu(root, self.size_var, *size_options)
+        # self.size_menu.grid(row=3, column=1)
 
         # 处理按钮
-        pack_all_button = Button(root, text='拼大图', command=lambda: self.pack_all_images(dest_entry.get(), output_entry.get()))
+        pack_all_button = Button(root, text='拼人物图', command=lambda: self.pack_character_images(dest_entry.get(), output_entry.get()))
         pack_all_button.grid(row=4, column=1)
-        pack_category_button = Button(root, text='按类别拼图', command=lambda: self.pack_images_by_category(dest_entry.get(), output_entry.get()))
-        pack_category_button.grid(row=4, column=2)
+        # pack_category_button = Button(root, text='按类别拼图', command=lambda: self.pack_images_by_category(dest_entry.get(), output_entry.get()))
+        # pack_category_button.grid(row=4, column=2)
 
         self.root = root
         self.tileset = TileSet()
@@ -56,21 +56,22 @@ class TilePackApp:
                     self.tileset.add_tile(tile)
         messagebox.showinfo("完成", "图片读取完成, 共读取了{}类，{}张图片".format(len(self.tileset.tiles), self.tileset.tile_count))
 
-    def pack_all_images(self, dest_dir, output_name):
-        size = tuple(map(int, self.size_var.get().split('x')))
+    def pack_character_images(self, dest_dir, output_name):
+        # size = tuple(map(int, self.size_var.get().split('x')))
+        size = (576, 384)
         if not output_name:
             messagebox.showwarning("警告", "请输入输出文件名。")
             return
          
-        self.tileset.pack(dest_dir, output_name, size)
+        self.tileset.pack_character(dest_dir, output_name, size)
         self.tileset.clear()
-        messagebox.showinfo("完成", "拼接大图完成！")
+        messagebox.showinfo("完成", "拼接人物图完成！")
 
-    def pack_images_by_category(self, dest_dir, suffix):
-        # 拼接图片 
-        self.tileset.pack_by_category(dest_dir, suffix)
-        self.tileset.clear()
-        messagebox.showinfo("完成", "按类别拼接图片完成！")
+    # def pack_images_by_category(self, dest_dir, suffix):
+    #     # 拼接图片 
+    #     self.tileset.pack_by_category(dest_dir, suffix)
+    #     self.tileset.clear()
+    #     messagebox.showinfo("完成", "按类别拼接图片完成！")
 
 # 创建主窗口
 root = Tk()

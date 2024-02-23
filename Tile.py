@@ -55,7 +55,7 @@ class TileSet:
         self.tiles = {}
         self.tile_count = 0
 
-    def pack(self, dir, name, size=(768, 768)):
+    def _pack(self, dir, name, size=(768, 768)):
         tileset_img = Image.new('RGBA', size, (255, 255, 255, 0))
         packer = newPacker()
         rid = 0
@@ -82,7 +82,21 @@ class TileSet:
             tileset_img.paste(tile.img, (rect.x, rect.y))
         tileset_img.save(os.path.join(dir, name + '.png'))
 
-    def pack_by_category(self, dir, suffix):
+    def pack_character(self, dir, name, size=(576, 384)):
+        tileset_img = Image.new('RGBA', size, (255, 255, 255, 0))
+        tile_width, tile_height = 48, 48
+
+        for i, tile_category in enumerate(self.tiles.keys()):
+            for j, tile in enumerate(self.tiles[tile_category][:4]):
+                y_offset = (i // 4) * tile_height * 4 + j * tile_height
+                for k in range(3):
+                    x_offset = (i % 4 * 3 + k) * tile_width
+                    # 粘贴tile图像到tileset_img上
+                    tileset_img.paste(tile.img, (x_offset, y_offset))
+                
+        tileset_img.save(os.path.join(dir, name + '.png'))
+
+    def _pack_by_category(self, dir, suffix):
         for category in self.tiles:
             tileset_img = Image.new('RGBA', (576, 384), (255, 255, 255, 0))
             packer = newPacker()
