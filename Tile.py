@@ -5,7 +5,7 @@ from rectpack import newPacker
 PIXEL_PER_CUBE = 48
 
 class Tile:
-    def __init__(self, dir, resolution=PIXEL_PER_CUBE):
+    def __init__(self, dir, name, category='default', x=1, y=1, resolution=PIXEL_PER_CUBE):
         '''
         dir:        图片所在目录
         resolution: 期望的图片分辨率，分辨率不同的会被缩放
@@ -15,14 +15,26 @@ class Tile:
         img:        图片对象
         '''
         self.dir = dir
-        self.name = dir.split('\\')[-2]
-        self.category = self.name.split('-')[0]
-        self.x, self.y = int(self.name.split('-')[1][0]), int(self.name.split('-')[1][1])
+        self.name = name
+        self.category = category
+        self.x, self.y = x, y
         self.img = Image.open(dir)
         if self.img.mode != 'RGBA':
             self.img = self.img.convert('RGBA')
         self.resize(resolution)
         self.resolution = resolution
+
+    def copy(self):
+        '''
+        创建并返回这个Tile对象的一个副本。
+        '''
+        # 创建一个新的Tile对象，复制所有属性
+        copied_tile = Tile(self.dir, self.name, self.category, self.x, self.y, self.resolution)
+        
+        # 复制图片对象
+        copied_tile.img = self.img.copy()
+        
+        return copied_tile
 
     def resize(self, resolution):
         self.img = self.img.resize((self.x * resolution, self.y * resolution), Image.Resampling.LANCZOS)
@@ -93,6 +105,38 @@ class TileSet:
                     x_offset = (i % 4 * 3 + k) * tile_width
                     # 粘贴tile图像到tileset_img上
                     tileset_img.paste(tile.img, (x_offset, y_offset))
+                
+        tileset_img.save(os.path.join(dir, name + '.png'))
+
+    def pack_shine_character(self, dir, name, shine_file, size=(576, 384)):
+        tileset_img = Image.new('RGBA', size, (255, 255, 255, 0))
+        tile_width, tile_height = 48, 48
+        shine_width, shine_height = 8, 8
+        shine_tile = Tile(shine_file, 
+                          name=shine_file.split('\\')[-1].split('.')[0],
+                          resolution=shine_width)
+        half_shine_tile = Tile(shine_file, 
+                               name=shine_file.split('\\')[-1].split('.')[0],
+                               resolution=shine_width)
+        alpha = half_shine_tile.img.split()[3]
+        alpha = alpha.point(lambda p: p * 0.5)
+        half_shine_tile.img.putalpha(alpha)
+
+        for i, tile_category in enumerate(self.tiles.keys()):
+            for j, tile in enumerate(self.tiles[tile_category][:4]):
+                y_offset = (i // 4) * tile_height * 4 + j * tile_height
+                x_offset = (i % 4 * 3) * tile_width
+                origin_tile = tile.copy()
+                tile.img.paste(shine_tile.img, (tile_width - shine_width, 0), shine_tile.img)
+                tileset_img.paste(tile.img, (x_offset, y_offset))
+
+                x_offset += tile_width
+                tile = origin_tile.copy()
+                tile.img.paste(half_shine_tile.img, (tile_width - shine_width, 0), half_shine_tile.img)
+                tileset_img.paste(tile.img, (x_offset, y_offset))
+                
+                x_offset += tile_width
+                tileset_img.paste(origin_tile.img, (x_offset, y_offset))
                 
         tileset_img.save(os.path.join(dir, name + '.png'))
 
