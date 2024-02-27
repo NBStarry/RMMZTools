@@ -94,9 +94,9 @@ class TileSet:
             tileset_img.paste(tile.img, (rect.x, rect.y))
         tileset_img.save(os.path.join(dir, name + '.png'))
 
-    def pack_character(self, dir, name, size=(576, 384)):
+    def pack_object(self, dir, name, size=(576, 384)):
         tileset_img = Image.new('RGBA', size, (255, 255, 255, 0))
-        tile_width, tile_height = 48, 48
+        tile_width, tile_height = PIXEL_PER_CUBE, PIXEL_PER_CUBE
 
         for i, tile_category in enumerate(self.tiles.keys()):
             for j, tile in enumerate(self.tiles[tile_category][:4]):
@@ -108,10 +108,10 @@ class TileSet:
                 
         tileset_img.save(os.path.join(dir, name + '.png'))
 
-    def pack_shine_character(self, dir, name, shine_file, size=(576, 384)):
+    def pack_shine_object(self, dir, name, shine_file, size=(576, 384), shine_size=(12, 12)):
         tileset_img = Image.new('RGBA', size, (255, 255, 255, 0))
-        tile_width, tile_height = 48, 48
-        shine_width, shine_height = 8, 8
+        tile_width, tile_height = PIXEL_PER_CUBE, PIXEL_PER_CUBE
+        shine_width, shine_height = shine_size
         shine_tile = Tile(shine_file, 
                           name=shine_file.split('\\')[-1].split('.')[0],
                           resolution=shine_width)
@@ -138,6 +138,20 @@ class TileSet:
                 x_offset += tile_width
                 tileset_img.paste(origin_tile.img, (x_offset, y_offset))
                 
+        tileset_img.save(os.path.join(dir, name + '.png'))
+
+    def pack_big_object(self, dir, name):
+        example_tile = self.tiles[list(self.tiles.keys())[0]][0]
+        x, y = example_tile.x, example_tile.y
+        tile_width, tile_height = PIXEL_PER_CUBE * x, PIXEL_PER_CUBE * y
+        tileset_img = Image.new('RGBA', (tile_width * 3, tile_height * 4), (255, 255, 255, 0))
+
+        for i, tile in enumerate(self.tiles[list(self.tiles.keys())[0]]):
+            y_offset = i * tile_height
+            for j in range(3):
+                x_offset = j * tile_width
+                tileset_img.paste(tile.img, (x_offset, y_offset))
+        
         tileset_img.save(os.path.join(dir, name + '.png'))
 
     def _pack_by_category(self, dir, suffix):
