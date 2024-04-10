@@ -1,5 +1,5 @@
 # For Windows Now
-# TODO: 为每种素材增加高亮动画
+# TODO:
 import os
 from tkinter import Tk, Label, Entry, Button, filedialog, messagebox, OptionMenu, StringVar
 
