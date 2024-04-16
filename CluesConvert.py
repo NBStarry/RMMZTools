@@ -46,14 +46,16 @@ def main():
     output_df['scope'] = 7
     output_df['successRate'] = 100
 
+    out_path = 'D:\OneDrive - sjtu.edu.cn\文档\RMMZ\\clues.json'
+
     # 调整格式与RMMZ匹配并输出到文件
-    output_df.to_json('D:\OneDrive - sjtu.edu.cn\文档\RMMZ\\clues.json', orient='records', force_ascii=False)
-    with open('D:\OneDrive - sjtu.edu.cn\文档\RMMZ\\clues.json', 'r', encoding='utf-8') as f:
+    output_df.to_json(out_path, orient='records', force_ascii=False)
+    with open(out_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
     content = content[:1] + 'null,' + content[1:]
 
-    with open('D:\OneDrive - sjtu.edu.cn\文档\RMMZ\\clues.json', 'w', encoding='utf-8') as f:
+    with open(out_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
 if __name__ == '__main__':
